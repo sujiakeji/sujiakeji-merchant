@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+  mysql:
+    image: mysql
+    container_name: sujiakeji-mysql
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - /data/docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: sujiakeji-rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: dev
+      RABBITMQ_DEFAULT_PASS: dev
+
+  merchant:
+    image: sujiakeji/sujiakeji-merchant
+    container_name: sujiakeji-merchant
+    depends_on:
+      - mysql
+      - rabbitmq
+    ports:
+      - 10100:10100
+    environment:
+      EUREKA_SERVER_HOST: sujiakeji-eureka-server
+      EUREKA_SERVER_PORT: 9000
+      MYSQL_HOST: sujiakeji-mysql
+      MYSQL_PORT: 3306
+      RABBITMQ_HOST: sujiakeji-rabbitmq
+      RABBITMQ_PORT: 5672
+      STORAGE_HOST: sujiakeji-storage
+      STORAGE_PORT: 10000
+      SPRING_PROFILES_ACTIVE: dev

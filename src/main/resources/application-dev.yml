@@ -1,0 +1,36 @@
+server:
+  port: 10100
+
+spring:
+  application:
+    name: sujiakeji-merchant
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/sujiakeji?useUnicode=true&characterEncoding=utf8
+    username: dev
+    password: dev
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: dev
+    password: dev
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  typeAliasesPackage: com.sujiakeji.merchant.domain
+  typeHandlersPackage: com.sujiakeji.merchant.mybatis.handler
+
+storage:
+  baseUrl: http://${STORAGE_HOST}:${STORAGE_PORT}
+
+logging:
+  level:
+    root: WARN
+    com.sujiakeji.merchant.mapper: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

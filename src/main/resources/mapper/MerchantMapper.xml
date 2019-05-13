@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sujiakeji.merchant.mapper.MerMapper">
+
+    <resultMap id="merResultMap" type="com.sujiakeji.merchant.domain.Merchant">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="mer_num" property="merNum" jdbcType="VARCHAR"/>
+        <result column="mer_name" property="merName" jdbcType="VARCHAR"/>
+        <result column="mer_short_name" property="merShortName" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="admin_id" property="adminId" jdbcType="BIGINT"/>
+        <result column="admin_auth_letter" property="adminAuthLetter" jdbcType="VARCHAR"/>
+        <result column="mer_attr" property="merAttr" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" javaType="org.joda.time.DateTime"
+                typeHandler="com.sujiakeji.merchant.mybatis.handler.DateTimeTypeHandler"/>
+        <result column="create_by" property="createBy" jdbcType="BIGINT"/>
+        <result column="update_date" property="updateDate" javaType="org.joda.time.DateTime"
+                typeHandler="com.sujiakeji.merchant.mybatis.handler.DateTimeTypeHandler"/>
+        <result column="update_by" property="updateBy" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="basicColumns">
+        id,
+        mer_num,
+        mer_name,
+        mer_short_name,
+        status,
+        admin_id,
+        admin_auth_letter,
+        mer_attr
+    </sql>
+
+    <sql id="fullColumns">
+        id,
+        mer_num,
+        mer_name,
+        mer_short_name,
+        status,
+        admin_id,
+        admin_auth_letter,
+        mer_attr
+        create_date,
+        create_by,
+        update_date,
+        update_by
+    </sql>
+
+    <select id="selectOne" resultMap="merResultMap" parameterType="java.util.Map">
+        select
+        <choose>
+            <when test="queryType == 'basic'">
+                <include refid="basicColumns"/>
+            </when>
+            <when test="queryType == 'full'">
+                <include refid="fullColumns"/>
+            </when>
+            <otherwise>
+                <include refid="basicColumns"/>
+            </otherwise>
+        </choose>
+        from t_mer
+        <if test="filterList != null">
+            <where>
+                <foreach collection="filterList" item="filter" separator=" and ">
+                    ${filter.condition} ${filter.value}
+                </foreach>
+            </where>
+        </if>
+        limit 1
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(1)
+        from t_mer
+        <if test="filterList != null">
+            <where>
+                <foreach collection="filterList" item="filter" separator=" and ">
+                    ${filter.condition} ${filter.value}
+                </foreach>
+            </where>
+        </if>
+    </select>
+
+    <select id="selectList" resultMap="merResultMap" parameterType="java.util.Map">
+        select
+        <choose>
+            <when test="queryType == 'basic'">
+                <include refid="basicColumns"/>
+            </when>
+            <when test="queryType == 'full'">
+                <include refid="fullColumns"/>
+            </when>
+            <otherwise>
+                <include refid="basicColumns"/>
+            </otherwise>
+        </choose>
+        from t_mer
+        <if test="filterList != null">
+            <where>
+                <foreach collection="filterList" item="filter" separator=" and ">
+                    ${filter.condition} ${filter.value}
+                </foreach>
+            </where>
+        </if>
+        <if test="order != null">
+            order by ${order}
+        </if>
+        <if test="offset != null and size !=null">
+            limit #{offset}, #{size}
+        </if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
+            parameterType="com.sujiakeji.merchant.domain.Merchant">
+        insert into t_mer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="merNum != null">
+                mer_num,
+            </if>
+            <if test="merName != null">
+                mer_name,
+            </if>
+            <if test="merShortName != null">
+                mer_short_name,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="adminId != null">
+                admin_id,
+            </if>
+            <if test="adminAuthLetter != null">
+                admin_auth_letter,
+            </if>
+            <if test="merAttr != null">
+                mer_attr,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="createBy != null">
+                create_by
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="merNum != null">
+                #{merNum,jdbcType=VARCHAR},
+            </if>
+            <if test="merName != null">
+                #{merName,jdbcType=VARCHAR},
+            </if>
+            <if test="merShortName != null">
+                #{merShortName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="adminId != null">
+                #{adminId,jdbcType=BIGINT},
+            </if>
+            <if test="adminAuthLetter != null">
+                #{adminAuthLetter,jdbcType=VARCHAR},
+            </if>
+            <if test="merAttr != null">
+                #{merAttr,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,typeHandler=com.sujiakeji.merchant.mybatis.handler.DateTimeTypeHandler},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.sujiakeji.merchant.domain.Merchant">
+        update t_mer
+        <set>
+            <if test="merNum != null">
+                mer_num = #{merNum,jdbcType=BIGINT},
+            </if>
+            <if test="merName != null">
+                mer_name = #{merName,jdbcType=VARCHAR},
+            </if>
+            <if test="merShortName != null">
+                mer_short_name = #{merShortName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="adminId != null">
+                admin_id = #{adminId,jdbcType=VARCHAR},
+            </if>
+            <if test="adminAuthLetter != null">
+                admin_auth_letter = #{adminAuthLetter,jdbcType=VARCHAR},
+            </if>
+            <if test="merAttr != null">
+                mer_attr = #{merAttr,jdbcType=VARCHAR},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate,typeHandler=com.sujiakeji.merchant.mybatis.handler.DateTimeTypeHandler},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete" parameterType="java.util.Map">
+        delete from t_mer
+        <if test="filterList != null">
+            <where>
+                <foreach collection="filterList" item="filter" separator=" and ">
+                    ${filter.condition} ${filter.value}
+                </foreach>
+            </where>
+        </if>
+    </delete>
+
+</mapper>
